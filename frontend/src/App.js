@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchEquipment, createEquipment } from "./api";
+import {
+  fetchEquipment,
+  createEquipment,
+  updateEquipment,
+  deleteEquipment
+} from "./api";
 
 const initialForm = {
   name: "",
@@ -11,23 +16,18 @@ const initialForm = {
 function App() {
   const [equipment, setEquipment] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     loadEquipment();
   }, []);
 
   function loadEquipment() {
-    fetchEquipment()
-      .then(data => {
-        setEquipment(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load equipment");
-        setLoading(false);
-      });
+    fetchEquipment().then(data => {
+      setEquipment(data);
+      setLoading(false);
+    });
   }
 
   function handleChange(e) {
@@ -36,17 +36,36 @@ function App() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
+
+    if (editingId) {
+      await updateEquipment(editingId, form);
+    } else {
       await createEquipment(form);
-      setForm(initialForm);
+    }
+
+    setForm(initialForm);
+    setEditingId(null);
+    loadEquipment();
+  }
+
+  function handleEdit(item) {
+    setEditingId(item._id);
+    setForm({
+      name: item.name,
+      type: item.type,
+      status: item.status,
+      lastCleanedDate: item.lastCleanedDate.slice(0, 10)
+    });
+  }
+
+  async function handleDelete(id) {
+    if (window.confirm("Delete this equipment?")) {
+      await deleteEquipment(id);
       loadEquipment();
-    } catch {
-      alert("Failed to add equipment");
     }
   }
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -82,7 +101,9 @@ function App() {
           required
         />
 
-        <button type="submit">Add Equipment</button>
+        <button type="submit">
+          {editingId ? "Update Equipment" : "Add Equipment"}
+        </button>
       </form>
 
       <hr />
@@ -94,6 +115,7 @@ function App() {
             <th>Type</th>
             <th>Status</th>
             <th>Last Cleaned</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -104,6 +126,12 @@ function App() {
               <td>{item.status}</td>
               <td>
                 {new Date(item.lastCleanedDate).toLocaleDateString()}
+              </td>
+              <td>
+                <button onClick={() => handleEdit(item)}>Edit</button>
+                <button onClick={() => handleDelete(item._id)}>
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
