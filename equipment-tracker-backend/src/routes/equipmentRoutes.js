@@ -35,4 +35,31 @@ router.post("/", async (req, res) => {
   }
 });
 
+// PUT /api/equipment/:id
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, type, status, lastCleanedDate } = req.body;
+
+    if (!name || !type || !status || !lastCleanedDate) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const updatedEquipment = await Equipment.findByIdAndUpdate(
+      id,
+      { name, type, status, lastCleanedDate },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedEquipment) {
+      return res.status(404).json({ message: "Equipment not found" });
+    }
+
+    res.json(updatedEquipment);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update equipment" });
+  }
+});
+
+
 module.exports = router;
