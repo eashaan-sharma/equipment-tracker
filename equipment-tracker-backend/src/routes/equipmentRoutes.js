@@ -61,5 +61,21 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedEquipment = await Equipment.findByIdAndDelete(id);
+
+    if (!deletedEquipment) {
+      return res.status(404).json({ message: "Equipment not found" });
+    }
+
+    res.json({ message: "Equipment deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete equipment" });
+  }
+});
+
 
 module.exports = router;
