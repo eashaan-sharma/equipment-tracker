@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/equipment";
+const API_URL = "https://equipment-tracker-o3f8.onrender.com/api/equipment";
 
 export async function fetchEquipment() {
   const res = await fetch(API_URL);
@@ -9,7 +9,7 @@ export async function fetchEquipment() {
 }
 
 export async function createEquipment(data) {
-  const res = await fetch("http://localhost:5000/api/equipment", {
+  const res = await fetch("https://equipment-tracker-o3f8.onrender.com/api/equipment", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -23,7 +23,7 @@ export async function createEquipment(data) {
 }
 
 export async function updateEquipment(id, data) {
-  const res = await fetch(`http://localhost:5000/api/equipment/${id}`, {
+  const res = await fetch(`https://equipment-tracker-o3f8.onrender.com/api/equipment/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -37,7 +37,7 @@ export async function updateEquipment(id, data) {
 }
 
 export async function deleteEquipment(id) {
-  const res = await fetch(`http://localhost:5000/api/equipment/${id}`, {
+  const res = await fetch(`https://equipment-tracker-o3f8.onrender.com/api/equipment/${id}`, {
     method: "DELETE"
   });
 
